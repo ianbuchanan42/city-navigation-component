@@ -5,7 +5,7 @@ A flexible and accessible navigation component for displaying city options with 
 ## Features
 
 - Accessible navigation with ARIA roles and keyboard support
-- Optional timezone display with automatic detection
+- Optional timezone display with automatic timezone property detection
 - Smooth sliding indicator for active selection
 
 ## Usage
