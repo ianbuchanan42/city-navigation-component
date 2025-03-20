@@ -1,6 +1,7 @@
 class CityNavigationComponent {
-  constructor(wrapper) {
+  constructor(wrapper, cities) {
     this.wrapper = wrapper;
+    this.cities = cities;
     this.navItems = [];
     this.slidingBar = null;
     this.currentCity = null;
@@ -8,26 +9,9 @@ class CityNavigationComponent {
   }
 
   async init() {
-    try {
-      const response = await fetch('navigation.json');
-      const data = await response.json();
-      this.cities = data.cities;
-      this.createStructure();
-      this.renderNavigation();
-      this.setupEventListeners();
-      this.updateSlidingBar();
-    } catch (error) {
-      console.error('Error loading navigation data:', error);
-      // Create semantic error message
-      const errorMessage = document.createElement('p');
-
-      errorMessage.setAttribute('role', 'alert');
-      errorMessage.setAttribute('aria-live', 'polite');
-      errorMessage.classList.add('error');
-      errorMessage.innerText =
-        'We were unable to load the city navigation data. Please try refreshing the page.';
-      this.wrapper.appendChild(errorMessage);
-    }
+    this.createStructure();
+    this.renderNavigation();
+    this.setupEventListeners();
   }
 
   createStructure() {
@@ -88,6 +72,8 @@ class CityNavigationComponent {
     // Set most left city as current city
     this.currentCity = this.cities[0];
     // Set the sliding bar under the current city
+    // this fixes the problem of the user seeing the sliding bar snap into place from the left side
+    // when the page loads
     this.updateSlidingBar();
   }
 
@@ -110,6 +96,7 @@ class CityNavigationComponent {
     });
   }
 
+  // Select the city
   selectCity(section) {
     const navItems = this.navItems.querySelectorAll('.nav-item');
     navItems.forEach((item) => {
@@ -122,6 +109,8 @@ class CityNavigationComponent {
     });
 
     this.currentCity = this.cities.find((city) => city.section === section);
+    // Add transition class before updating position
+    this.slidingBar.classList.add('transition');
     this.updateSlidingBar();
   }
 
@@ -146,9 +135,24 @@ class CityNavigationComponent {
 }
 
 // Initialize the navigation when the DOM is loaded and ready to go!
-document.addEventListener('DOMContentLoaded', () => {
-  const wrapper = document.querySelector('.city-navigation-component');
-  if (wrapper) {
-    new CityNavigationComponent(wrapper);
+document.addEventListener('DOMContentLoaded', async () => {
+  try {
+    // Simulate error for testing
+    // Uncomment the next line to test error state
+    //throw new Error('Test error');
+    const response = await fetch('navigation.json');
+    const { cities } = await response.json();
+    const wrapper = document.querySelector('.city-navigation-component');
+    new CityNavigationComponent(wrapper, cities);
+  } catch (error) {
+    const wrapper = document.querySelector('.city-navigation-component');
+    const errorMessage = document.createElement('div');
+    errorMessage.setAttribute('role', 'alert');
+    errorMessage.setAttribute('aria-live', 'polite');
+    errorMessage.classList.add('error-message');
+    errorMessage.innerHTML = `
+      <p>Unable to load city navigation. Please try again.</p>
+    `;
+    wrapper.appendChild(errorMessage);
   }
 });

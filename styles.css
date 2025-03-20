@@ -31,8 +31,10 @@
   position: relative;
   font-size: 1rem;
   font-weight: 400;
+  outline: none; /* Remove default outline */
 }
 
+/* Hover effect using Apple blue */
 .city-navigation-component .nav-item:hover {
   color: #007aff;
 }
@@ -40,6 +42,14 @@
 .city-navigation-component .nav-item.active {
   color: #000000;
   cursor: default;
+}
+
+/* Focus effect using Apple blue */
+/* Added to make the focus effect less intrusive with button text */
+.city-navigation-component .nav-item:focus-visible {
+  outline: 2px solid #007aff;
+  outline-offset: 4px;
+  border-radius: 4px;
 }
 
 .city-navigation-component .nav-bar-container {
@@ -66,9 +76,15 @@
   left: 0;
   height: 1px;
   background-color: #000000;
-  transition: all 0.3s ease;
   pointer-events: none;
   z-index: 1;
+}
+
+/* Transition effect for the sliding bar */
+/* we were seeing the transition when the page loaded */
+/* this class is added to the sliding bar on first user click */
+.city-navigation-component .sliding-bar.transition {
+  transition: all 0.3s ease;
 }
 
 /* Component-specific reset */
@@ -82,4 +98,19 @@
   font: inherit;
   color: inherit;
   cursor: pointer;
+}
+
+.city-navigation-component .error-message {
+  color: #ff3b30;
+  font-size: 0.875rem;
+  padding: 1rem;
+  text-align: center;
+  background-color: rgba(255, 59, 48, 0.1);
+  border-radius: 8px;
+  margin: 1rem 0;
+}
+
+.city-navigation-component .error-message p {
+  margin: 0;
+  line-height: 1.4;
 }
