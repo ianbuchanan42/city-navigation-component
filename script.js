@@ -15,6 +15,7 @@ class CityNavigationComponent {
     // detects if the cities have timezones, this will be used to determine if the time display should be shown
     this.hasTimezones = this.cities.every((city) => city.timezone);
 
+    // remove any existing children from the wrapper
     this.wrapper.innerHTML = '';
 
     this.init();
@@ -43,12 +44,14 @@ class CityNavigationComponent {
     navItems.setAttribute('role', 'tablist');
 
     // Create the navigation bar container
+    // unsure if it would be best to add aria-hidden true to a structural element that holds decorative elements
     const navBarContainer = document.createElement('div');
     navBarContainer.classList.add('nav-bar-container');
 
     // Create background bar
     const navBarBackground = document.createElement('div');
     navBarBackground.classList.add('nav-bar-background');
+    navBarBackground.setAttribute('aria-hidden', 'true');
 
     // Create the sliding bar
     const slidingBar = document.createElement('div');
@@ -97,7 +100,7 @@ class CityNavigationComponent {
     label.textContent = city.label;
     contentContainer.appendChild(label);
 
-    // Add time display element
+    // Add time display element only if all the cities have timezones
     if (this.hasTimezones) {
       const timeDisplay = document.createElement('span');
       timeDisplay.classList.add('time-display', 'hidden');
@@ -137,7 +140,7 @@ class CityNavigationComponent {
       }
     });
 
-    // mainly for testing purposes
+    // mainly for testing purposes, but nice for tablets if screen size changes
     window.addEventListener('resize', () => {
       this.updateSlidingBar();
     });
@@ -174,11 +177,13 @@ class CityNavigationComponent {
     this.updateSlidingBar();
 
     // Update the time display for the newly selected city
-    this.updateTimeDisplay();
+    if (this.hasTimezones) {
+      this.updateTimeDisplay();
+    }
   }
 
   // Update the sliding bar under the current city
-  // getBoundingClientRect() was a fun discovery!
+  // getBoundingClientRect() was a fun re-discovery!
   // it returns the size of an element and its position relative to the viewport.
   // with this we can calculate the width and position of the sliding bar
   // and update it when the current city changes
@@ -197,7 +202,7 @@ class CityNavigationComponent {
   }
 
   //TIMEZONE OPTION
-  //Following method is used to update the time display
+  //Following methods are used to update the time display
 
   // Keeps the time display updated
   startTimeUpdates() {
