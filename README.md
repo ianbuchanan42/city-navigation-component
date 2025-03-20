@@ -1,40 +1,68 @@
 # City Navigation Component
 
-A lightweight, accessible navigation component for displaying city options with a smooth sliding bar animation.
+A flexible and accessible navigation component for displaying city options with optional timezone support.
+
+## Features
+
+- Accessible navigation with ARIA roles and keyboard support
+- Optional timezone display with automatic detection
+- Smooth sliding indicator for active selection
 
 ## Usage
 
-```html
-<section class="city-navigation-section" aria-labelledby="city-nav-heading">
-  <h2 id="city-nav-heading" class="visually-hidden">City Navigation</h2>
-  <div class="city-navigation-component"></div>
-</section>
+### Basic Implementation
 
-<script src="script.js"></script>
-<script>
-  document.addEventListener('DOMContentLoaded', () => {
-    const navigation = new CityNavigation();
-    navigation.init();
-  });
-</script>
+```html
+<div class="city-navigation-component"></div>
 ```
 
-## Key Features
+```javascript
+const cities = [
+  { section: 'nyc', label: 'New York' },
+  { section: 'la', label: 'Los Angeles' },
+  { section: 'chi', label: 'Chicago' },
+];
 
-- **Accessibility First**: Built with semantic HTML and ARIA attributes
-- **Keyboard Navigation**: Full tab support with visible focus indicators
-- **Smooth Animations**: Sliding bar transitions on city selection
-- **Responsive Design**: Adapts to different screen sizes
-- **Error Handling**: Graceful fallbacks for data loading issues
-- **Zero Dependencies**: Built with vanilla JavaScript and CSS
+const wrapper = document.querySelector('.city-navigation-component');
+new CityNavigationComponent(wrapper, cities);
+```
 
-## Implementation Notes
+### With Timezone Support
 
-- The sliding bar is positioned using `getBoundingClientRect()` for precise placement
-- Event delegation with `closest()` for efficient click handling
-- Focus-visible styling provides clear visual feedback for keyboard navigation
-- Component maintains state for active city selection
+```javascript
+const citiesWithTimezones = [
+  { section: 'nyc', label: 'New York', timezone: 'America/New_York' },
+  { section: 'la', label: 'Los Angeles', timezone: 'America/Los_Angeles' },
+  { section: 'chi', label: 'Chicago', timezone: 'America/Chicago' },
+];
+
+const wrapper = document.querySelector('.city-navigation-component');
+new CityNavigationComponent(wrapper, citiesWithTimezones);
+```
+
+## Timezone Support
+
+The component automatically detects if all cities have timezone information:
+
+- If all cities have a `timezone` property, the component will display the current time for the selected city
+- If any city is missing the `timezone` property, the time display feature will be disabled
+- Time updates every minute to stay current
+
+## Accessibility
+
+- Uses semantic HTML elements (`nav`, `button`)
+- Implements ARIA roles and attributes for proper screen reader support
+- Keyboard navigation with focus management
+- Thoughtfully styled focus indicators for better keyboard accessibility
+
+## Notes/Thoughts
+
+- Consider implementing responsive layouts for mobile devices (e.g., multi-row support)
+- Future improvements could include:
+  - Maximum number of cities limit
+  - Custom styling options
+  - Additional time format options
 
 ## Dependencies
 
-None! This component is built with vanilla JavaScript and CSS.
+None! This is a vanilla JavaScript component with no external dependencies.

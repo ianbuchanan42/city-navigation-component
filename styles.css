@@ -21,14 +21,19 @@ h2 {
   color: #8e8e93;
 }
 
+.loading-test {
+  display: block;
+  text-align: center;
+}
+
 /* Main component container */
 .city-navigation-component {
   font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Text',
     'Helvetica Neue', Helvetica, Arial, sans-serif;
   background-color: white;
   padding: 2rem 1rem;
-  border-radius: 8px;
   margin: 2rem auto;
+  /* Improves text rendering on WebKit browsers for crisper, more readable text */
   -webkit-font-smoothing: antialiased;
 }
 
@@ -53,6 +58,7 @@ h2 {
   cursor: pointer;
   padding: 0.5rem 0;
   color: #8e8e93;
+  /* Smooth color change when hovering */
   transition: color 0.3s ease;
   position: relative;
   font-size: 1rem;
@@ -82,7 +88,7 @@ h2 {
 .city-navigation-component .nav-bar-container {
   position: relative;
   width: 100%;
-  height: 1px;
+  height: 1.5px;
   display: flex;
   justify-content: center;
 }
@@ -93,7 +99,7 @@ h2 {
   bottom: 0;
   left: 0;
   width: 100%;
-  height: 1px;
+  height: 1.5px;
   background-color: #8e8e93;
   opacity: 0.5;
 }
@@ -103,7 +109,7 @@ h2 {
   position: absolute;
   bottom: 0;
   left: 0;
-  height: 1px;
+  height: 1.5px;
   background-color: #000000;
   pointer-events: none;
   z-index: 1;
@@ -111,7 +117,7 @@ h2 {
 
 /* Transition for sliding bar animation */
 .city-navigation-component .sliding-bar.transition {
-  transition: all 0.3s ease;
+  transition: all 0.4s ease;
 }
 
 /* Reset button styles */
@@ -122,6 +128,7 @@ h2 {
   background: none;
   padding: 0;
   margin: 0;
+  /* Inherits font, color, and cursor from parent element */
   font: inherit;
   color: inherit;
   cursor: pointer;
@@ -130,7 +137,7 @@ h2 {
 /* Error message styling */
 .city-navigation-component .error-message {
   color: #ff3b30;
-  font-size: 0.875rem;
+  font-size: 1rem;
   padding: 1rem;
   text-align: center;
   background-color: rgba(255, 59, 48, 0.1);
@@ -148,11 +155,23 @@ h2 {
    Uses absolute positioning with transform for smooth animations
    and better performance than top/left positioning */
 .city-navigation-component .time-display {
-  /* Position above the button with some spacing */
+  /* Position above the button with some spacing
+     position: absolute takes the element out of the normal document flow
+     and positions it relative to its nearest positioned ancestor (the button)
+     
+     bottom: calc(100% + 5px) means:
+     - 100% refers to the full height of the parent button
+     - + 5px adds 5 pixels of spacing above the button
+     - calc() allows us to combine these values
+     This creates a consistent gap between the time display and the button,
+     regardless of the button's height */
   position: absolute;
-  bottom: calc(100% + 10px);
-  /* Center horizontally using transform instead of left/right
-     This provides better performance and smoother animations */
+  bottom: calc(100% + 5px);
+
+  /* Center horizontally using transform
+     translateX(-50%) moves the element left by half its width
+     This is a common technique for centering absolutely positioned elements
+     The -50% is needed because the transform is based on the element's width */
   left: 50%;
   transform: translateX(-50%) translateY(0);
 
@@ -171,7 +190,9 @@ h2 {
 
   /* Smooth transition for all properties
      Using cubic-bezier for a natural easing curve */
-  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  transition: opacity 0.3s cubic-bezier(0.4, 0, 0.2, 1),
+    visibility 0.3s cubic-bezier(0.4, 0, 0.2, 1),
+    transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 
   /* Prevent interaction with the time display
      Ensures it doesn't interfere with button clicks */
@@ -183,7 +204,9 @@ h2 {
 }
 
 /* Visible state - fully opaque and visible
-   Transform ensures the element is centered and in position */
+   Transform ensures the element is centered and in position
+   translateX(-50%) keeps it centered horizontally
+   translateY(0) keeps it at its natural vertical position */
 .city-navigation-component .time-display.visible {
   opacity: 1;
   visibility: visible;
@@ -191,7 +214,9 @@ h2 {
 }
 
 /* Hidden state - slides down slightly while fading out
-   Creates a subtle but polished exit animation */
+   Creates a subtle but polished exit animation
+   translateY(10px) moves the element down by 10 pixels while hiding
+   This creates a smooth "slide down and fade" effect */
 .city-navigation-component .time-display.hidden {
   opacity: 0;
   visibility: hidden;

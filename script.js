@@ -1,20 +1,33 @@
 class CityNavigationComponent {
   constructor(wrapper, cities) {
+    //element that the component is appended to
     this.wrapper = wrapper;
+    //cities to display
     this.cities = cities;
+    //array of navigation items
     this.navItems = [];
+    //sliding bar that will slide under the active/current city
     this.slidingBar = null;
+    //current city
     this.currentCity = null;
+    //time interval to update the time display
     this.timeInterval = null;
-    // maybe should be a check for timezone all instead of some
+    // detects if the cities have timezones, this will be used to determine if the time display should be shown
     this.hasTimezones = this.cities.every((city) => city.timezone);
+
+    this.wrapper.innerHTML = '';
+
     this.init();
   }
 
   async init() {
+    // create element scaffolding
     this.createStructure();
+    // render the navigation base on passed in cities
     this.renderNavigation();
+    // setup event listeners for button clicks and window resize
     this.setupEventListeners();
+    // update the time display
     this.startTimeUpdates();
   }
 
@@ -88,6 +101,8 @@ class CityNavigationComponent {
     if (this.hasTimezones) {
       const timeDisplay = document.createElement('span');
       timeDisplay.classList.add('time-display', 'hidden');
+      timeDisplay.setAttribute('aria-live', 'polite');
+      timeDisplay.setAttribute('role', 'status');
       contentContainer.appendChild(timeDisplay);
     }
 
@@ -201,10 +216,7 @@ class CityNavigationComponent {
 
     const activeItem = this.navItems.querySelector('.nav-item.active');
     if (!activeItem) {
-      this.navItems.querySelectorAll('.time-display').forEach((display) => {
-        display.classList.remove('visible');
-        display.classList.add('hidden');
-      });
+      this.hideAllTimeDisplays();
       return;
     }
 
@@ -217,13 +229,13 @@ class CityNavigationComponent {
       });
 
       // Hide all time displays
-      this.navItems.querySelectorAll('.time-display').forEach((display) => {
-        display.classList.remove('visible');
-        display.classList.add('hidden');
-      });
+      this.hideAllTimeDisplays();
 
       // Show only the active button's time display
       const activeTimeDisplay = activeItem.querySelector('.time-display');
+      if (!activeTimeDisplay) {
+        throw new Error('Time display element not found for active item');
+      }
       activeTimeDisplay.textContent = time;
 
       // requestAnimationFrame ensures smooth visual updates by:
@@ -237,12 +249,17 @@ class CityNavigationComponent {
         activeTimeDisplay.classList.add('visible');
       });
     } catch (error) {
-      console.error('Error updating time:', error);
-      this.navItems.querySelectorAll('.time-display').forEach((display) => {
-        display.classList.remove('visible');
-        display.classList.add('hidden');
-      });
+      console.error('Error updating time:', error.message || error);
+      this.hideAllTimeDisplays();
     }
+  }
+
+  // Helper method to hide all time displays
+  hideAllTimeDisplays() {
+    this.navItems.querySelectorAll('.time-display').forEach((display) => {
+      display.classList.remove('visible');
+      display.classList.add('hidden');
+    });
   }
 }
 
@@ -261,13 +278,13 @@ document.addEventListener('DOMContentLoaded', async () => {
     new CityNavigationComponent(wrapper, cities);
 
     // Fetch Cities with Timezones
-    const responseWithTime = await fetch('navigation-time.json');
-    const dataWithTime = await responseWithTime.json();
+    const responseWithTimezones = await fetch('navigation-timezone.json');
+    const dataWithTimezones = await responseWithTimezones.json();
     // Create and initialize the city navigation component passing in the wrapper and cities
-    const wrapperWithTime = document.querySelectorAll(
+    const wrapperWithTimezones = document.querySelectorAll(
       '.city-navigation-component'
     )[1];
-    new CityNavigationComponent(wrapperWithTime, dataWithTime.cities);
+    new CityNavigationComponent(wrapperWithTimezones, dataWithTimezones.cities);
   } catch (error) {
     // error handling for testing purposes
     const wrapper = document.querySelector('.city-navigation-component');
