@@ -49,17 +49,31 @@ class CityNavigationComponent {
     this.navItems = navItems;
     this.slidingBar = slidingBar;
   }
-
+  // Create a button for each city
   createButton(city, index) {
+    // Create a button element for each city
     const button = document.createElement('button');
     button.classList.add('nav-item');
+
+    // Set the first button as active by default
+    // This ensures we have a valid initial state for the navigation
     if (index === 0) {
       button.classList.add('active');
     }
+
+    // Store the section identifier for click handling
+    // This allows us to map clicks to specific city sections
     button.setAttribute('data-section', city.section);
+
+    // ARIA attributes for accessibility
+    // role="tab" indicates this is part of a tablist navigation
+    // aria-selected indicates the current active state
     button.setAttribute('role', 'tab');
     button.setAttribute('aria-selected', index === 0);
+
+    // Set the visible text label
     button.textContent = city.label;
+
     return button;
   }
 
@@ -98,19 +112,32 @@ class CityNavigationComponent {
 
   // Select the city
   selectCity(section) {
+    // Get all navigation items to update their states
     const navItems = this.navItems.querySelectorAll('.nav-item');
+
+    // Update each navigation item's state
     navItems.forEach((item) => {
+      // Remove active state from all items first
+      // This ensures only one item can be active at a time
       item.classList.remove('active');
       item.setAttribute('aria-selected', 'false');
+
+      // If this is the selected item, mark it as active
+      // We use dataset.section to match the city data structure
       if (item.dataset.section === section) {
         item.classList.add('active');
         item.setAttribute('aria-selected', 'true');
       }
     });
 
+    // Update the current city reference for state management
     this.currentCity = this.cities.find((city) => city.section === section);
-    // Add transition class before updating position
+
+    // Enable smooth transition animation for the sliding bar
+    // This is added before position update to ensure animation works
     this.slidingBar.classList.add('transition');
+
+    // Update the sliding bar position to match the new active item
     this.updateSlidingBar();
   }
 
@@ -140,9 +167,12 @@ document.addEventListener('DOMContentLoaded', async () => {
     // Simulate error for testing
     // Uncomment the next line to test error state
     //throw new Error('Test error');
+    // Fetch Cities
     const response = await fetch('navigation.json');
     const { cities } = await response.json();
+    // Select element to attach the city navigation component to
     const wrapper = document.querySelector('.city-navigation-component');
+    // Create and initialize the city navigation component passing in the wrapper and cities
     new CityNavigationComponent(wrapper, cities);
   } catch (error) {
     const wrapper = document.querySelector('.city-navigation-component');
