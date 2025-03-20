@@ -40,6 +40,13 @@ const wrapper = document.querySelector('.city-navigation-component');
 new CityNavigationComponent(wrapper, citiesWithTimezones);
 ```
 
+## Setup
+
+To view the demo:
+
+1. Open `index.html` in a web browser
+2. Or use VS Code's Live Server extension
+
 ## Timezone Support
 
 The component automatically detects if all cities have timezone information:
