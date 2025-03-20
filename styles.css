@@ -1,4 +1,27 @@
-/* City Navigation Component */
+/* Base styles for the demo page */
+body {
+  font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Text',
+    'Helvetica Neue', Helvetica, Arial, sans-serif;
+  background-color: white;
+  padding: 2rem;
+  margin: 0;
+}
+
+/* Section spacing for demo layout */
+section {
+  margin-bottom: 10rem;
+}
+
+/* Section headings */
+h2 {
+  font-size: 1.5rem;
+  font-weight: 600;
+  margin-bottom: 1rem;
+  text-align: center;
+  color: #8e8e93;
+}
+
+/* Main component container */
 .city-navigation-component {
   font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Text',
     'Helvetica Neue', Helvetica, Arial, sans-serif;
@@ -9,11 +32,13 @@
   -webkit-font-smoothing: antialiased;
 }
 
+/* Navigation container */
 .city-navigation-component .city-nav {
   position: relative;
   padding: 1rem;
 }
 
+/* Navigation items container */
 .city-navigation-component .nav-items {
   display: flex;
   gap: 2rem;
@@ -23,6 +48,7 @@
   padding: 0 2rem;
 }
 
+/* Individual navigation items */
 .city-navigation-component .nav-item {
   cursor: pointer;
   padding: 0.5rem 0;
@@ -31,27 +57,28 @@
   position: relative;
   font-size: 1rem;
   font-weight: 400;
-  outline: none; /* Remove default outline */
+  outline: none;
 }
 
-/* Hover effect using Apple blue */
+/* Hover state for navigation items */
 .city-navigation-component .nav-item:hover {
   color: #007aff;
 }
 
+/* Active state for navigation items */
 .city-navigation-component .nav-item.active {
   color: #000000;
   cursor: default;
 }
 
-/* Focus effect using Apple blue */
-/* Added to make the focus effect less intrusive with button text */
+/* Focus state for accessibility */
 .city-navigation-component .nav-item:focus-visible {
   outline: 2px solid #007aff;
   outline-offset: 4px;
   border-radius: 4px;
 }
 
+/* Sliding bar container */
 .city-navigation-component .nav-bar-container {
   position: relative;
   width: 100%;
@@ -60,6 +87,7 @@
   justify-content: center;
 }
 
+/* Background line for the sliding bar */
 .city-navigation-component .nav-bar-background {
   position: absolute;
   bottom: 0;
@@ -70,6 +98,7 @@
   opacity: 0.5;
 }
 
+/* Animated sliding bar */
 .city-navigation-component .sliding-bar {
   position: absolute;
   bottom: 0;
@@ -80,14 +109,12 @@
   z-index: 1;
 }
 
-/* Transition effect for the sliding bar */
-/* we were seeing the transition when the page loaded */
-/* this class is added to the sliding bar on first user click */
+/* Transition for sliding bar animation */
 .city-navigation-component .sliding-bar.transition {
   transition: all 0.3s ease;
 }
 
-/* Component-specific reset */
+/* Reset button styles */
 .city-navigation-component button {
   -webkit-appearance: none;
   appearance: none;
@@ -100,6 +127,7 @@
   cursor: pointer;
 }
 
+/* Error message styling */
 .city-navigation-component .error-message {
   color: #ff3b30;
   font-size: 0.875rem;
@@ -110,7 +138,62 @@
   margin: 1rem 0;
 }
 
+/* Error message paragraph */
 .city-navigation-component .error-message p {
   margin: 0;
   line-height: 1.4;
+}
+
+/* Time display styling for city navigation
+   Uses absolute positioning with transform for smooth animations
+   and better performance than top/left positioning */
+.city-navigation-component .time-display {
+  /* Position above the button with some spacing */
+  position: absolute;
+  bottom: calc(100% + 10px);
+  /* Center horizontally using transform instead of left/right
+     This provides better performance and smoother animations */
+  left: 50%;
+  transform: translateX(-50%) translateY(0);
+
+  /* Typography styling for readability */
+  font-size: 0.875rem;
+  font-weight: 400;
+  color: #8e8e93;
+
+  /* Prevent layout shifts by maintaining consistent height */
+  min-height: 1.5rem;
+
+  /* Initial hidden state with opacity and visibility
+     Using both properties ensures proper hiding across browsers */
+  opacity: 0;
+  visibility: hidden;
+
+  /* Smooth transition for all properties
+     Using cubic-bezier for a natural easing curve */
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+
+  /* Prevent interaction with the time display
+     Ensures it doesn't interfere with button clicks */
+  pointer-events: none;
+
+  /* Ensure text stays on one line and is centered */
+  text-align: center;
+  white-space: nowrap;
+}
+
+/* Visible state - fully opaque and visible
+   Transform ensures the element is centered and in position */
+.city-navigation-component .time-display.visible {
+  opacity: 1;
+  visibility: visible;
+  transform: translateX(-50%) translateY(0);
+}
+
+/* Hidden state - slides down slightly while fading out
+   Creates a subtle but polished exit animation */
+.city-navigation-component .time-display.hidden {
+  opacity: 0;
+  visibility: hidden;
+  transform: translateX(-50%) translateY(10px);
 }

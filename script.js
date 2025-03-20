@@ -5,6 +5,9 @@ class CityNavigationComponent {
     this.navItems = [];
     this.slidingBar = null;
     this.currentCity = null;
+    this.timeInterval = null;
+    // maybe should be a check for timezone all instead of some
+    this.hasTimezones = this.cities.every((city) => city.timezone);
     this.init();
   }
 
@@ -12,6 +15,7 @@ class CityNavigationComponent {
     this.createStructure();
     this.renderNavigation();
     this.setupEventListeners();
+    this.startTimeUpdates();
   }
 
   createStructure() {
@@ -71,9 +75,23 @@ class CityNavigationComponent {
     button.setAttribute('role', 'tab');
     button.setAttribute('aria-selected', index === 0);
 
-    // Set the visible text label
-    button.textContent = city.label;
+    // Create container for label and time
+    const contentContainer = document.createElement('div');
+    contentContainer.classList.add('button-content');
 
+    // Set the visible text label
+    const label = document.createElement('span');
+    label.textContent = city.label;
+    contentContainer.appendChild(label);
+
+    // Add time display element
+    if (this.hasTimezones) {
+      const timeDisplay = document.createElement('span');
+      timeDisplay.classList.add('time-display', 'hidden');
+      contentContainer.appendChild(timeDisplay);
+    }
+
+    button.appendChild(contentContainer);
     return button;
   }
 
@@ -139,6 +157,9 @@ class CityNavigationComponent {
 
     // Update the sliding bar position to match the new active item
     this.updateSlidingBar();
+
+    // Update the time display for the newly selected city
+    this.updateTimeDisplay();
   }
 
   // Update the sliding bar under the current city
@@ -159,6 +180,70 @@ class CityNavigationComponent {
       this.slidingBar.style.left = `${rect.left - navRect.left}px`;
     }
   }
+
+  //TIMEZONE OPTION
+  //Following method is used to update the time display
+
+  // Keeps the time display updated
+  startTimeUpdates() {
+    // Update time immediately
+    this.updateTimeDisplay();
+
+    // Update time every minute
+    this.timeInterval = setInterval(() => {
+      this.updateTimeDisplay();
+    }, 60000); // 60000ms = 1 minute
+  }
+
+  updateTimeDisplay() {
+    // Early return if we don't have timezone to express
+    if (!this.hasTimezones) return;
+
+    const activeItem = this.navItems.querySelector('.nav-item.active');
+    if (!activeItem) {
+      this.navItems.querySelectorAll('.time-display').forEach((display) => {
+        display.classList.remove('visible');
+        display.classList.add('hidden');
+      });
+      return;
+    }
+
+    try {
+      const time = new Date().toLocaleTimeString('en-US', {
+        timeZone: this.currentCity.timezone,
+        hour: 'numeric',
+        minute: '2-digit',
+        hour12: true,
+      });
+
+      // Hide all time displays
+      this.navItems.querySelectorAll('.time-display').forEach((display) => {
+        display.classList.remove('visible');
+        display.classList.add('hidden');
+      });
+
+      // Show only the active button's time display
+      const activeTimeDisplay = activeItem.querySelector('.time-display');
+      activeTimeDisplay.textContent = time;
+
+      // requestAnimationFrame ensures smooth visual updates by:
+      // 1. Synchronizing with the browser's render cycle (typically 60fps)
+      // 2. Preventing layout thrashing by batching DOM updates
+      // 3. Ensuring the text content is updated before showing the element
+      // This is especially important for time displays to prevent flickering
+      // and ensure smooth transitions between updates
+      requestAnimationFrame(() => {
+        activeTimeDisplay.classList.remove('hidden');
+        activeTimeDisplay.classList.add('visible');
+      });
+    } catch (error) {
+      console.error('Error updating time:', error);
+      this.navItems.querySelectorAll('.time-display').forEach((display) => {
+        display.classList.remove('visible');
+        display.classList.add('hidden');
+      });
+    }
+  }
 }
 
 // Initialize the navigation when the DOM is loaded and ready to go!
@@ -171,10 +256,20 @@ document.addEventListener('DOMContentLoaded', async () => {
     const response = await fetch('navigation.json');
     const { cities } = await response.json();
     // Select element to attach the city navigation component to
-    const wrapper = document.querySelector('.city-navigation-component');
+    const wrapper = document.querySelectorAll('.city-navigation-component')[0];
     // Create and initialize the city navigation component passing in the wrapper and cities
     new CityNavigationComponent(wrapper, cities);
+
+    // Fetch Cities with Timezones
+    const responseWithTime = await fetch('navigation-time.json');
+    const dataWithTime = await responseWithTime.json();
+    // Create and initialize the city navigation component passing in the wrapper and cities
+    const wrapperWithTime = document.querySelectorAll(
+      '.city-navigation-component'
+    )[1];
+    new CityNavigationComponent(wrapperWithTime, dataWithTime.cities);
   } catch (error) {
+    // error handling for testing purposes
     const wrapper = document.querySelector('.city-navigation-component');
     const errorMessage = document.createElement('div');
     errorMessage.setAttribute('role', 'alert');
