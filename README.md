@@ -57,6 +57,7 @@ The component automatically detects if all cities have timezone information:
 
 ## Notes/Thoughts
 
+- Noticed demo video had click rings on some of the button interactions, decided not to implement since it was not a consistent reaction from the user interaction.
 - Consider implementing responsive layouts for mobile devices (e.g., multi-row support)
 - Future improvements could include:
   - Maximum number of cities limit
